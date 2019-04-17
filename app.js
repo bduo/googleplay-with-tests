@@ -5,12 +5,12 @@ const app = express();
 
 app.use(morgan('common')); 
 
-const apps = require('./playstore.js');
+const playstore = require('./playstore.js');
 
-app.get('/apps', (req, res) => {
+app.get('/playstore', (req, res) => {
     const { search='', sort='', genres='' } = req.query;
     
-    let results = apps.filter(app => app['App'].toLowerCase().includes(search.toLowerCase()));
+    let results = playstore.filter(app => app['App'].toLowerCase().includes(search.toLowerCase()));
 
     if(sort) {
         if(!['Rating', 'App'].includes(sort)) {
@@ -61,6 +61,5 @@ app.get('/apps', (req, res) => {
 
 })
 
-app.listen(8000, () => {
-    console.log('Express server is listneing on port 8000 mofo!')
-})
+module.exports = app;
+
