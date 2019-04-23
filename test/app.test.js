@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const request = require('supertest')
-const app = require('../app')
+const app = require('../app.js')
 
 
 describe('GET /playstore', () => {
@@ -66,14 +66,14 @@ describe('GET /playstore', () => {
     it('should be 400 if genre is incorrect', () => {
         return request(app)
         .get('/playstore')
-        .query({genre: 'MISTAKE'})
+        .query({genres: 'MISTAKE'})
         .expect(400, 'Genre not recognized')
     })
 
     it('should return only games with matching genre', () => {
         return request(app)
         .get('/playstore')
-        .query({genre: 'Casual'} || {genre: 'Action'})
+        .query({genres: 'Casual'} || {genres: 'Action'})
         .expect(200)
         .expect('Content-Type', /json/)
         .then(res => {
