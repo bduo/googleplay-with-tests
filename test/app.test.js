@@ -5,7 +5,10 @@ const app = require('../app')
 
 describe('GET /playstore', () => {
     it('GET request returns an array', () => {
-        request(app)
+        // test wasn't passing before because the API wasn't being called
+        // test passed when we took out return because tests don't run without it.
+        // in other words, without the return there, it was running an empty test that passed by default
+        return request(app)
         .get('/playstore')
         .expect(200)
         .expect('Content-Type', /json/)
@@ -18,14 +21,14 @@ describe('GET /playstore', () => {
     })
 
     it('should be 400 if sort is incorrect', () => {
-        request(app)
+        return request(app)
         .get('/playstore')
         .query({sort: 'MISTAKE'})
         .expect(400, 'Must sort by rating or app title')
     })
 
     it('should sort by rating', () => {
-        request(app)
+        return request(app)
         .get('/playstore')
         .query({sort: 'Rating'})
         .expect(200)
@@ -43,7 +46,7 @@ describe('GET /playstore', () => {
     })
 
     it('should sort by app title', () => {
-        request(app)
+        return request(app)
         .get('/playstore')
         .query({sort: 'App'})
         .expect(200)
@@ -61,14 +64,14 @@ describe('GET /playstore', () => {
     })
 
     it('should be 400 if genre is incorrect', () => {
-        request(app)
+        return request(app)
         .get('/playstore')
         .query({genre: 'MISTAKE'})
         .expect(400, 'Genre not recognized')
     })
 
     it('should return only games with matching genre', () => {
-        request(app)
+        return request(app)
         .get('/playstore')
         .query({genre: 'Casual'} || {genre: 'Action'})
         .expect(200)

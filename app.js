@@ -3,14 +3,17 @@ const morgan = require('morgan');
 
 const app = express();
 
-app.use(morgan('common')); 
+app.use(morgan('common'));
 
 const playstore = require('./playstore.js');
 
 app.get('/playstore', (req, res) => {
-    const { search='', sort='', genres='' } = req.query;
-    
-    let results = playstore.filter(app => app['App'].toLowerCase().includes(search.toLowerCase()));
+    const { sort='', genres='' } = req.query;
+
+    // we need to have an if... statement here, otherwise /playstore will not load on its own (i.e. without queries)
+    if(!sort && !genres) {
+        res.status(200).send(playstore);
+    }
 
     if(sort) {
         if(!['Rating', 'App'].includes(sort)) {
@@ -19,11 +22,11 @@ app.get('/playstore', (req, res) => {
                 .send('Must sort by rating or app title')
         }
 
-        results.sort((a, b) => {
+        let sortResults = playstore.sort((a, b) => {
             return a[sort] > b[sort] ? 1 : a[sort] < b[sort] ? -1 : 0;
         });
 
-        res.status(200).send(results);
+        res.status(200).send(sortResults);
     }
 
     if(genres) {
@@ -38,7 +41,7 @@ app.get('/playstore', (req, res) => {
         const matchGenres = gameGenres.filter(term => term === genres);
 
         // iterate over objects in playstore
-        let newResults = results.filter(game => {
+        let newResults = playstore.filter(game => {
             // look at each "Genres" key in playstore objects
             // if "Genres" value has more than one genre/term, split into array
             let genreValues = game.Genres.split(';');
@@ -56,6 +59,7 @@ app.get('/playstore', (req, res) => {
             // check to see if "Genres" value includes the term in matchGenres
             return genreValues[0] === matchGenres[0];
         });
+        
         res.status(200).send(newResults);
     }
 
